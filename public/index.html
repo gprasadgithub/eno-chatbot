@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eno – Capital One Help Center Chatbot</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--P:#D03027;--bg:#f5f4f0;--card:#fff;--border:#e5e3dc;--text:#1a1a1a;--muted:#666;--hint:#999;--success:#1a7d4e}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--card:#242424;--border:#333;--text:#f0efeb;--muted:#999;--hint:#666}}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
+#side{width:260px;flex-shrink:0;background:var(--card);border-right:.5px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+#sh{padding:12px 13px;border-bottom:.5px solid var(--border)}
+#sh h3{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+#tabs{display:flex;gap:3px}
+.tab{flex:1;padding:5px 2px;font-size:11px;font-weight:500;border:.5px solid var(--border);border-radius:6px;cursor:pointer;background:transparent;color:var(--muted)}
+.tab.on{background:var(--P);color:#fff;border-color:transparent}
+#sb{flex:1;overflow-y:auto;padding:12px}
+.f{margin-bottom:10px}
+.f label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;font-size:12px;padding:6px 9px;border:.5px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit}
+.f textarea{resize:vertical;min-height:64px;line-height:1.5}
+.f input[type=color]{height:30px;padding:2px 3px;cursor:pointer}
+.pills{display:flex;flex-wrap:wrap;gap:4px}
+.pill{padding:3px 8px;font-size:11px;border:.5px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--muted)}
+.pill.on{background:var(--P);color:#fff;border-color:transparent}
+.btn{width:100%;padding:7px;font-size:12px;font-weight:500;border-radius:6px;border:none;cursor:pointer;background:var(--P);color:#fff;margin-top:3px}
+.btn:hover{opacity:.85}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.panel{display:none}.panel.on{display:block}
+hr.d{border:none;border-top:.5px solid var(--border);margin:9px 0}
+#kbs{background:var(--bg);border-radius:7px;padding:8px 10px;margin-bottom:9px;font-size:11px;color:var(--muted);line-height:1.8}
+.kr{display:flex;justify-content:space-between}
+.kv{font-weight:600;color:var(--text)}
+#chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#chdr{padding:10px 16px;border-bottom:.5px solid var(--border);background:var(--card);display:flex;align-items:center;gap:9px}
+#av{width:32px;height:32px;border-radius:50%;background:var(--P);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+#bn{font-size:13px;font-weight:600;color:var(--text)}
+#bs{font-size:10px;color:var(--success)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:3px;vertical-align:middle}
+#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{display:flex;gap:7px;max-width:88%;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1}}
+.m.u{align-self:flex-end;flex-direction:row-reverse}
+.ma{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500}
+.m.b .ma{background:var(--P)}
+.m.u .ma{background:var(--border);color:var(--muted)}
+.mb{padding:9px 13px;border-radius:15px;font-size:13px;line-height:1.65;color:var(--text)}
+.m.b .mb{background:var(--card);border:.5px solid var(--border);border-top-left-radius:3px}
+.m.u .mb{background:var(--P);color:#fff;border-top-right-radius:3px}
+.srcs{margin-top:6px;padding-top:6px;border-top:.5px solid var(--border)}
+.sl{font-size:10px;color:var(--hint);margin-bottom:2px}
+a.sc{display:inline-block;font-size:10px;padding:2px 7px;border:.5px solid var(--border);border-radius:100px;color:var(--muted);margin:1px 2px 1px 0;text-decoration:none}
+a.sc:hover{background:var(--bg)}
+.tp{display:flex;align-items:center;gap:5px;padding:9px 13px;background:var(--card);border:.5px solid var(--border);border-radius:15px;border-top-left-radius:3px}
+.tp span{width:6px;height:6px;border-radius:50%;background:var(--hint);animation:bl 1.2s infinite}
+.tp span:nth-child(2){animation-delay:.2s}.tp span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.3}40%{opacity:1}}
+#foot{padding:11px 16px;background:var(--card);border-top:.5px solid var(--border)}
+#ir{display:flex;gap:7px;align-items:flex-end}
+#ui{flex:1;resize:none;border:.5px solid var(--border);border-radius:12px;padding:8px 12px;font-size:13px;background:var(--bg);color:var(--text);line-height:1.5;max-height:90px;min-height:36px;font-family:inherit}
+#ui:focus{outline:none;border-color:var(--P)}
+#sbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--P);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#sbtn:hover{opacity:.8}
+#sbtn svg{width:14px;height:14px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.chip{padding:4px 10px;font-size:11px;border:.5px solid var(--border);border-radius:100px;cursor:pointer;background:transparent;color:var(--muted)}
+.chip:hover{background:var(--bg);border-color:var(--P)}
+</style>
+</head>
+<body>
+
+<div id="side">
+  <div id="sh"><h3>Configuration</h3>
+    <div id="tabs">
+      <button class="tab on" onclick="stab('persona')">Persona</button>
+      <button class="tab" onclick="stab('theme')">Theme</button>
+      <button class="tab" onclick="stab('kb')">KB</button>
+    </div>
+  </div>
+  <div id="sb">
+    <div id="panel-persona" class="panel on">
+      <div class="f"><label>Bot name</label><input id="cn" value="Eno"/></div>
+      <div class="f"><label>Avatar emoji</label><input id="ce" value="💳" style="font-size:17px;text-align:center;width:50px"/></div>
+      <div class="f"><label>Tone</label>
+        <div class="pills">
+          <button class="pill on" onclick="ston(this,'friendly')">Friendly</button>
+          <button class="pill" onclick="ston(this,'formal')">Formal</button>
+          <button class="pill" onclick="ston(this,'concise')">Concise</button>
+          <button class="pill" onclick="ston(this,'empathetic')">Empathetic</button>
+        </div>
+      </div>
+      <div class="f"><label>Persona instructions</label><textarea id="cp">You are Eno, Capital One's helpful virtual assistant. Help customers with credit cards, bank accounts, auto loans, and fraud/disputes. Be accurate. Never invent account-specific details.</textarea></div>
+      <div class="f"><label>Greeting message</label><textarea id="cg" style="min-height:50px">Hi! I'm Eno, your Capital One assistant. How can I help you today?</textarea></div>
+      <button class="btn" onclick="applyP()">Apply Persona</button>
+    </div>
+    <div id="panel-theme" class="panel">
+      <div class="f"><label>Primary color</label><input id="cc" type="color" value="#D03027" oninput="applyT()"/></div>
+      <div class="f"><label>Font</label>
+        <select id="cf" onchange="applyT()">
+          <option value="system-ui,sans-serif">System UI</option>
+          <option value="'Georgia',serif">Georgia</option>
+          <option value="'Courier New',monospace">Courier New</option>
+        </select>
+      </div>
+      <hr class="d">
+      <div class="f"><label>Presets</label>
+        <div class="pgrid">
+          <button class="btn" style="background:#D03027;margin:0" onclick="setC('#D03027')">Capital One</button>
+          <button class="btn" style="background:#003087;margin:0" onclick="setC('#003087')">Navy</button>
+          <button class="btn" style="background:#1A7D4E;margin:0" onclick="setC('#1A7D4E')">Forest</button>
+          <button class="btn" style="background:#6B4FBB;margin:0" onclick="setC('#6B4FBB')">Purple</button>
+        </div>
+      </div>
+    </div>
+    <div id="panel-kb" class="panel">
+      <div id="kbs">
+        <div class="kr"><span>Articles</span><span class="kv">30</span></div>
+        <div class="kr"><span>Chunks</span><span class="kv" id="ck">—</span></div>
+        <div class="kr"><span>Source</span><span class="kv">capitalone.com</span></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7">
+        <strong style="font-size:10px;color:var(--text)">TOPICS</strong><br>
+        Credit Cards · Checking &amp; Savings · Auto Loans · Fraud &amp; Disputes · Account Access · Cafés
+        <br><br>
+        <strong style="font-size:10px;color:var(--text)">RAG</strong><br>
+        BM25 keyword retrieval → top 5 chunks injected as context → Claude answers grounded in KB
+        <br><br>
+        <strong style="font-size:10px;color:var(--text)">MODEL</strong><br>
+        claude-sonnet-4-20250514 via Anthropic API
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="chat">
+  <div id="chdr">
+    <div id="av">💳</div>
+    <div><div id="bn">Eno</div><div id="bs"><span class="dot"></span>Online · Capital One Help Center</div></div>
+  </div>
+  <div id="msgs"></div>
+  <div id="foot">
+    <div class="chips" id="chips"></div>
+    <div id="ir">
+      <textarea id="ui" placeholder="Ask about your Capital One account..." rows="1"></textarea>
+      <button id="sbtn" onclick="send()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="8" x2="14" y2="8"/><polyline points="9,3 14,8 9,13"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KB=[
+ {t:"Activating your credit card",u:"https://www.capitalone.com/help-center/credit-cards/activate-your-new-card/",c:["To activate your Capital One credit card: visit capitalone.com/activate, use the Capital One mobile app, or call the number on the sticker on your card. You need your 3-digit security code from the back of the card. Create an online account first if you don't have one.","After activating a replacement card: cut up old plastic cards through the chip and magnetic strip. Metal cards: use the return envelope provided. Update recurring subscriptions with your new card number. Customer service: 1-800-227-4825."]},
+ {t:"Disputing a credit card charge",u:"https://www.capitalone.com/help-center/fraud-disputes/dispute-credit-charge/",c:["If you authorized a transaction but there's a problem with the product or amount — file a dispute. If the charge was completely unauthorized — file a fraud claim instead. These are different processes.","To file a dispute digitally: within 90 days of the transaction date via app or website. After 90 days: call number on back of card. Pending transactions cannot be disputed — wait for posting (usually 5 days). Select transaction in app → Report a Problem → answer questions.","Disputes resolve within 90 days. Capital One acts as go-between with the merchant. You may receive a temporary credit during investigation. Mail disputes to: Capital One, Attn: Disputes, PO Box 30279, Salt Lake City, UT 84130-0279."]},
+ {t:"Reporting credit card fraud",u:"https://www.capitalone.com/help-center/fraud-disputes/report-fraud/",c:["Capital One offers $0 liability for unauthorized charges — you are never responsible for fraud. Report by selecting the transaction in the app → Report a Problem, or call the number on the back of your card.","Lock your card in the app immediately to stop further charges (reversible instantly). Fraud investigation takes up to 90 days. Replacement card in 4–6 business days. Transactions over 6 months old must be reported by phone.","Fraud prevention: use virtual card numbers online, enable purchase notifications, sign up for free CreditWise credit monitoring and SSN dark web monitoring."]},
+ {t:"Late credit card payments",u:"https://www.capitalone.com/help-center/credit-cards/late-payment-support/",c:["Online/phone payments must be received before 12 midnight ET on your due date. Exception: if due date equals statement closing date, payment must be before 8 p.m. ET. Mailed payments credited the day received by 5 p.m. local time.","Set up AutoPay for minimum payment, statement balance, or custom amount. Schedule up to 3 payments from multiple bank accounts. Enable payment reminders via email, text, or app. You can change your due date — takes 2 billing cycles."]},
+ {t:"Making a credit card payment",u:"https://www.capitalone.com/help-center/credit-cards/make-payment/",c:["Pay Capital One credit card: online at capitalone.com (fastest), via the mobile app, by phone (number on back of card), or mail a check to the address on your statement. AutoPay available for minimum, full balance, or custom amount."]},
+ {t:"360 Checking overdraft options",u:"https://www.capitalone.com/bank/overdraft-options/",c:["Capital One does NOT charge overdraft fees on 360 Checking. Three options: (1) Auto-Decline — transactions that would overdraw are declined, no fee. (2) Free Savings Transfer — automatically transfers from linked savings. (3) No-Fee Overdraft — Capital One may pay the overdraft, no fee.","To qualify for No-Fee Overdraft: deposit at least $250 in 2 of the last 3 calendar months. New accounts eligible at the 3rd calendar month earliest. Eligible: direct deposits, ACH, ATM/branch deposits, mobile deposits, Zelle. Internal Capital One transfers do NOT count.","Change overdraft settings: sign in → Checking Account → More Services → Overdraft Settings."]},
+ {t:"Depositing money",u:"https://www.capitalone.com/bank/deposit/",c:["Deposit options: mobile check deposit, Capital One ATMs, cash at branches/Cafés, wire transfers (free to receive), Zelle, external bank transfers, cash at participating stores.","Availability: direct/electronic deposits — immediately. Capital One ATM cash — immediately. Mobile check (before 9 p.m. ET) — same day. 360 Performance Savings mobile deposits — 4 business day hold. Checks from another Capital One account — next business day. ACH — 2nd business day."]},
+ {t:"Zelle payments",u:"https://www.capitalone.com/help-center/checking-savings/transfer-funds-with-zelle/",c:["Capital One 360 Checking supports Zelle for free person-to-person payments. Transfers typically instant for enrolled recipients. Zelle counts as eligible deposit for No-Fee Overdraft (unlike internal Capital One transfers). Set up: Capital One app → Send Money with Zelle."]},
+ {t:"Auto loan management",u:"https://www.capitalone.com/help-center/auto/",c:["Manage your Capital One auto loan: activate at verified.capitalone.com/enroll/pii. Make payments online at capitalone.com, via the mobile app, or by calling the number on your statement. After payoff: Capital One sends your title or releases the lien within a few weeks. Transfer title promptly — required in most states."]},
+ {t:"Lost or stolen credit card",u:"https://www.capitalone.com/help-center/credit-cards/lost-stolen/",c:["If your credit card is lost or stolen: immediately lock your card in the Capital One app or website (prevents charges, reversible instantly). Report it through the app, website, or by calling the number on the back of your card. A replacement card will be sent. After receiving it: update subscriptions and digital wallets."]},
+ {t:"Disputing a debit card charge",u:"https://www.capitalone.com/help-center/fraud-disputes/dispute-debit-charge/",c:["Dispute a debit charge if: you didn't receive what you paid for, charged unexpectedly for a free trial, canceled a service but still charged, charged wrong amount or twice, or merchandise wasn't as described. To dispute: call 1-866-536-9023 (8am–11pm ET, 7 days/week). Pending transactions can't be disputed."]},
+ {t:"Reporting debit card fraud",u:"https://www.capitalone.com/help-center/fraud-disputes/report-debit-card-fraud/",c:["For debit card fraud: call Capital One immediately at 1-888-464-0727. Transaction must be posted (not pending) to initiate a claim. Lock your debit card in the app immediately to prevent further charges."]},
+ {t:"Common scams",u:"https://www.capitalone.com/help-center/fraud-disputes/common-scam-types/",c:["Common scams: grandparent/emergency scams, fake pet listings, marketplace scams (too-good-to-be-true prices, strange URLs), real estate wire fraud (fake last-minute wiring instruction changes). Capital One will NEVER ask for your full password, PIN, or one-time passcode via email or text."]},
+ {t:"Sign-in and account access",u:"https://www.capitalone.com/help-center/contact-us/sign-in-support/",c:["Reset username or password: capitalone.com or app → Forgot username/password → verify identity via one-time PIN to phone or email on file. Capital One supports passkeys — sign in with face, fingerprint, or device PIN for faster, more secure access."]},
+ {t:"Capital One contact numbers",u:"https://www.capitalone.com/help-center/contact-us/",c:["Phone numbers: Banking: 1-877-383-4802 (8am–11pm ET, 7 days/week). Debit fraud: 1-888-464-0727. Debit disputes: 1-866-536-9023. 1099 forms: 1-800-655-BANK (2265). Credit card: number on the back of your card."]},
+ {t:"Visiting a Capital One Café or branch",u:"https://www.capitalone.com/help-center/checking-savings/visit-capital-one/",c:["Capital One Cafés: part bank, part café — open 7 days/week with extended hours. Branches: traditional banking with teller windows, ATMs, full account servicing. ID required: U.S. driver's license OR state non-driver ID OR passport PLUS Social Security Card or ITIN. Both documents required. 70,000+ fee-free ATMs including MoneyPass and Allpoint."]},
+ {t:"360 Checking account features",u:"https://www.capitalone.com/bank/checking-accounts/online-checking-account/features/",c:["360 Checking: no monthly fees, no minimum balance, free debit card, 70,000+ fee-free ATMs, mobile check deposit, up to 2 days early with direct deposit, Zelle, free first checkbook, wire transfers received free, FDIC insured, no overdraft fees."]},
+ {t:"IRS 1099 tax forms",u:"https://www.capitalone.com/help-center/checking-savings/irs-1099-frequently-asked-questions/",c:["1099 forms for interest earned on savings/CDs. Access online in your Capital One portal if enrolled in paperless. For a mailed copy call 1-800-655-BANK (2265) — available from first business day of February, takes 7–10 business days."]},
+ {t:"Pending transactions",u:"https://www.capitalone.com/help-center/credit-cards/pending-transactions/",c:["Pending transactions are authorized but not yet fully processed. They reduce available credit temporarily. Amount may change slightly or transaction may drop off if never completed. Generally post within 1–5 business days. Cannot be disputed until posted."]},
+ {t:"Balance transfers",u:"https://www.capitalone.com/help-center/credit-cards/balance-transfer/",c:["Balance transfer moves debt from another card to your Capital One card. Request online or by phone. Fees typically 3–5%. Some cards offer 0% promotional APR for a limited time. Transfers take 3–14 business days."]},
+ {t:"Cash advance",u:"https://www.capitalone.com/help-center/credit-cards/cash-advance/",c:["Cash advance: get cash at an ATM (using card and PIN) or at a bank branch, up to your cash advance limit. Higher APR than purchases, interest begins immediately with no grace period. Fee typically 3–5% or minimum flat amount."]},
+ {t:"Credit limit increase",u:"https://www.capitalone.com/help-center/credit-cards/credit-limit-increase/",c:["Request a credit limit increase online, in the app, or by calling the number on the back of your card. Capital One may also automatically increase your limit. A hard inquiry may occur. Factors: payment history, income, debt, account age. Decisions often instant."]},
+ {t:"Abandoned property",u:"https://www.capitalone.com/help-center/contact-us/abandoned-property/",c:["To prevent your account from being considered abandoned, initiate contact with Capital One periodically — logging in, making transactions, or calling counts. If property is turned over to the state, file a claim with your state's unclaimed property administrator."]},
+ {t:"Credit card referral bonuses",u:"https://www.capitalone.com/help-center/credit-cards/getting-credit-card-referral-bonus/",c:["Share your referral link via the Capital One app or website. When your referral is approved and meets spending requirements, both you and your referral may earn bonus miles, cash back, or points. Amounts vary by card and promotion."]},
+ {t:"Check deposit availability",u:"https://www.capitalone.com/help-center/checking-savings/deposit-support/",c:["360 Checking: most deposits available next business day. Direct deposits available immediately. Savings accounts: 4 business day hold on most deposits. Mobile deposits before 9 p.m. ET post same day. Direct deposit to 360 Checking gets you paid up to 2 days early."]},
+ {t:"Venture vs. Venture X — key differences",u:"https://www.capitalone.com/learn-grow/money-management/capital-one-venture-vs-venture-x/",c:[
+  "ANNUAL FEE: Venture has a $95 annual fee. Venture X has a $395 annual fee.",
+  "REWARDS EARNING — Venture: 2X miles on all purchases; 5X miles on hotels, vacation rentals, rental cars and activities booked through Capital One Travel; 5X miles on Capital One Entertainment purchases. Venture X: 2X miles on all purchases; 5X miles on flights and vacation rentals booked through Capital One Travel; 10X miles on hotels and rental cars booked through Capital One Travel; 5X miles on Capital One Entertainment purchases.",
+  "VENTURE X EXCLUSIVE BENEFITS (not on Venture): $300 annual travel credit for bookings through Capital One Travel. 10,000 anniversary bonus miles every year starting on your first anniversary (worth $100 toward travel). Access to 1,300+ airport lounges worldwide including Capital One Lounges and Priority Pass lounges. Access to Premier Collection hotels (in addition to Lifestyle Collection). Hertz President's Circle status (Venture gets Five Star status). Visa Infinite benefits.",
+  "SHARED BENEFITS (both Venture and Venture X): 75,000 bonus miles welcome offer when you spend $4,000 in the first 3 months. Up to $120 credit for Global Entry or TSA PreCheck. No foreign transaction fees. Access to Lifestyle Collection hotels with $50 experience credit per stay, room upgrades, early check-in/late checkout. Capital One Entertainment access. Hertz Gold+ status upgrade. Miles never expire. Transfer miles to 15+ travel loyalty partners. Flexible redemption: cover travel purchases within 90 days, book through Capital One Travel, transfer to partners, get gift cards or cash back.",
+  "UPGRADING: If you have had a Venture card for at least a year, you may be eligible to upgrade to Venture X. Sign in to your Capital One account to check for upgrade offers. The Venture X annual fee of $395 can be offset by the $300 travel credit + 10,000 anniversary miles, making the effective cost around $95 for frequent travelers."
+ ]},
+ {t:"Capital One Venture card overview",u:"https://www.capitalone.com/learn-grow/money-management/all-about-venture/",c:[
+  "The Capital One Venture card earns unlimited 2X miles on every purchase, plus 5X miles on hotels, vacation rentals, rental cars and activities booked through Capital One Travel, and 5X miles on Capital One Entertainment purchases. Annual fee: $95. No foreign transaction fees.",
+  "Welcome bonus: 75,000 miles when you spend $4,000 in the first 3 months. Redemption options: cover recent travel purchases (within 90 days), book through Capital One Travel, transfer miles to 15+ loyalty partners, get gift cards, cash back as statement credit or check, shop at Amazon or PayPal.",
+  "Venture travel benefits: Lifestyle Collection hotels ($50 experience credit, room upgrades, early check-in/late checkout). Up to $120 credit for Global Entry or TSA PreCheck. No foreign transaction fees. Hertz Five Star status. 24-hour travel assistance."
+ ]},
+ {t:"Capital One Venture X card overview",u:"https://www.capitalone.com/learn-grow/more-than-money/all-about-venture-x/",c:[
+  "The Capital One Venture X card earns 2X miles on all purchases, 5X miles on flights and vacation rentals booked through Capital One Travel, and 10X miles on hotels and rental cars booked through Capital One Travel. Annual fee: $395.",
+  "Venture X annual benefits that offset the fee: $300 annual travel credit (for Capital One Travel bookings), 10,000 anniversary bonus miles every year starting at first anniversary. Welcome bonus: 75,000 miles when you spend $4,000 in first 3 months.",
+  "Venture X exclusive premium benefits: Access to 1,300+ airport lounges worldwide — Capital One Lounges and Priority Pass lounges (after enrollment). Premier Collection and Lifestyle Collection hotel access. Hertz President's Circle status. Visa Infinite benefits. All standard Venture benefits (Global Entry/TSA PreCheck credit, no foreign transaction fees, miles transfer to partners, etc.)."
+ ]},
+ {t:"Capital One miles — earning and redeeming",u:"https://www.capitalone.com/credit-cards/travel-and-miles/",c:[
+  "Capital One miles never expire and have no blackout dates. You can book any airline, anytime, anywhere. Miles can be redeemed for: travel purchases (flights, hotels, rental cars, vacation rentals within 90 days of purchase), bookings through Capital One Travel, transfers to 15+ loyalty program partners, gift cards, cash back (statement credit or check), Amazon or PayPal purchases.",
+  "Capital One Travel benefits for all Venture/Venture X cardholders: price prediction tools to alert you when to book, average savings of 15% on flights, price drop protection. Venture X cardholders also get a $300 annual travel credit applied at checkout within Capital One Travel."
+ ]}
+];
+
+const SUGG=["How do I activate my credit card?","How do I dispute a charge?","Venture vs Venture X differences?","What are my overdraft options?","How do I report a lost card?","What is Zelle?"];
+const TONES={friendly:"Be warm and conversational. Use simple clear language.",formal:"Be professional and precise.",concise:"Be very brief. Short answers only.",empathetic:"Be understanding, especially with frustrated customers."};
+
+let cfg={name:"Eno",emoji:"💳",tone:"friendly",persona:"You are Eno, Capital One's helpful virtual assistant. Help customers with credit cards, bank accounts, auto loans, and fraud/disputes. Be accurate. Never invent account-specific details.",greeting:"Hi! I'm Eno, your Capital One assistant. How can I help you today?"};
+let hist=[];
+let busy=false;
+
+function stab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',['persona','theme','kb'][i]===t));
+  ['persona','theme','kb'].forEach(n=>document.getElementById('panel-'+n).classList.toggle('on',n===t));
+}
+function ston(btn,t){document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));btn.classList.add('on');cfg.tone=t;}
+function applyT(){
+  const c=document.getElementById('cc').value;
+  document.documentElement.style.setProperty('--P',c);
+  document.body.style.fontFamily=document.getElementById('cf').value;
+}
+function setC(c){document.getElementById('cc').value=c;applyT();}
+function applyP(){
+  cfg.name=document.getElementById('cn').value.trim()||'Bot';
+  cfg.emoji=document.getElementById('ce').value.trim()||'🤖';
+  cfg.persona=document.getElementById('cp').value;
+  cfg.greeting=document.getElementById('cg').value;
+  document.getElementById('bn').textContent=cfg.name;
+  document.getElementById('av').textContent=cfg.emoji;
+  alert('Persona applied!');
+}
+
+function bm25(q,txt){
+  const qs=q.toLowerCase().split(/\s+/).filter(w=>w.length>2);
+  const t=txt.toLowerCase();
+  let s=0;
+  qs.forEach(w=>{s+=(t.match(new RegExp(w,'g'))||[]).length*(1+1/Math.max(qs.length,1));});
+  return s;
+}
+function retrieve(q){
+  let sc=[];
+  KB.forEach(art=>art.c.forEach(chunk=>{
+    const s=bm25(q,chunk+' '+art.t);
+    if(s>0) sc.push({s,chunk,t:art.t,u:art.u});
+  }));
+  sc.sort((a,b)=>b.s-a.s);
+  const seen=new Set();
+  return sc.filter(r=>{if(seen.has(r.u))return false;seen.add(r.u);return true;}).slice(0,5);
+}
+
+function buildSystemPrompt(chunks){
+  const ctx=chunks.length
+    ? chunks.map(c=>`[${c.t}]\n${c.chunk}`).join('\n\n---\n\n')
+    : '(No specific KB articles matched — use your general knowledge of Capital One products.)';
+  return `${cfg.persona}
+
+Tone: ${TONES[cfg.tone]||TONES.friendly}
+
+KNOWLEDGE BASE CONTEXT:
+${ctx}
+
+Instructions: If the knowledge base has relevant info, use it. If not, answer from your general knowledge of Capital One — do NOT refuse to answer just because the KB is empty. Never invent personal account details. Use bullet points or numbered steps for comparisons and processes. Sign off as ${cfg.name}.`;
+}
+
+function addMsg(role,text,srcs=[]){
+  const msgs=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='m '+role;
+  const html=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  let sh='';
+  if(srcs.length){sh=`<div class="srcs"><div class="sl">Sources</div>${srcs.map(s=>`<a href="${s.u}" target="_blank" class="sc">${s.t}</a>`).join('')}</div>`;}
+  const astyle=role==='b'?'background:var(--P)':'background:var(--border);color:var(--muted)';
+  d.innerHTML=`<div class="ma" style="${astyle}">${role==='b'?cfg.emoji:'Me'}</div><div class="mb">${html}${sh}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+  hist.push({r:role,c:text});
+}
+
+function showTyping(){
+  const msgs=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='m b';d.id='tp';
+  d.innerHTML=`<div class="ma" style="background:var(--P)">${cfg.emoji}</div><div class="tp"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping(){const e=document.getElementById('tp');if(e)e.remove();}
+
+async function callClaude(systemPrompt, messages){
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: messages
+    })
+  });
+  if(!response.ok){
+    const err = await response.json().catch(()=>({}));
+    throw new Error(err.error?.message || `API error ${response.status}`);
+  }
+  const data = await response.json();
+  return data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+}
+
+async function send(text){
+  if(busy)return;
+  const inp=document.getElementById('ui');
+  const q=text||inp.value.trim();
+  if(!q)return;
+  inp.value='';inp.style.height='auto';
+  document.getElementById('chips').style.display='none';
+  addMsg('u',q);
+  busy=true;showTyping();
+
+  const chunks=retrieve(q);
+  const systemPrompt=buildSystemPrompt(chunks);
+
+  // Build messages array from recent history (exclude the message we just added)
+  const recentHist=hist.slice(-12,-1); // last 6 turns (before the new user msg)
+  const messages=[];
+  for(const m of recentHist){
+    messages.push({role: m.r==='u'?'user':'assistant', content: m.c});
+  }
+  messages.push({role:'user', content: q});
+
+  try{
+    const reply = await callClaude(systemPrompt, messages);
+    removeTyping();busy=false;
+    const seen=new Set();
+    const srcs=chunks.filter(c=>{if(seen.has(c.u))return false;seen.add(c.u);return true;}).slice(0,3);
+    addMsg('b',reply,srcs);
+  }catch(e){
+    removeTyping();busy=false;
+    addMsg('b','Sorry, I ran into an error: '+e.message);
+  }
+}
+
+function init(){
+  const msgs=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='m b';
+  d.innerHTML=`<div class="ma" style="background:var(--P)">${cfg.emoji}</div><div class="mb">${cfg.greeting}</div>`;
+  msgs.appendChild(d);
+  hist.push({r:'b',c:cfg.greeting});
+  const chips=document.getElementById('chips');
+  SUGG.forEach(s=>{
+    const btn=document.createElement('button');
+    btn.className='chip';btn.textContent=s;
+    btn.onclick=()=>send(s);chips.appendChild(btn);
+  });
+  document.getElementById('ck').textContent=KB.reduce((a,b)=>a+b.c.length,0);
+  document.getElementById('ui').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+  document.getElementById('ui').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';});
+}
+init();
+</script>
+</body>
+</html>
