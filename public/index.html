@@ -257,7 +257,7 @@ Tone: ${TONES[cfg.tone]||TONES.friendly}
 KNOWLEDGE BASE CONTEXT:
 ${ctx}
 
-Instructions: If the knowledge base has relevant info, use it. If not, answer from your general knowledge of Capital One — do NOT refuse to answer just because the KB is empty. Never invent personal account details. Use bullet points or numbered steps for comparisons and processes. Sign off as ${cfg.name}.`;
+Instructions: If the knowledge base has relevant info, use it. If not, answer from your general knowledge of Capital One — do NOT refuse to answer just because the KB is empty. Never invent personal account details. Use bullet points or numbered steps for comparisons and processes. Do not sign off with your name at the end of responses.`;
 }
 
 function addMsg(role,text,srcs=[]){
