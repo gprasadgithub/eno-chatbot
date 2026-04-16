@@ -126,8 +126,8 @@ a.sc:hover{background:var(--bg)}
         <strong style="font-size:10px;color:var(--text)">RAG</strong><br>
         BM25 keyword retrieval → top 5 chunks injected as context → Claude answers grounded in KB
         <br><br>
-        <strong style="font-size:10px;color:var(--text)">MODEL</strong><br>
-        claude-sonnet-4-20250514 via Anthropic API
+        <strong style="font-size:10px;color:var(--text)">PART 2</strong><br>
+        KB will be hosted externally for public demo access.
       </div>
     </div>
   </div>
@@ -283,25 +283,6 @@ function showTyping(){
 }
 function removeTyping(){const e=document.getElementById('tp');if(e)e.remove();}
 
-async function callClaude(systemPrompt, messages){
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: messages
-    })
-  });
-  if(!response.ok){
-    const err = await response.json().catch(()=>({}));
-    throw new Error(err.error?.message || `API error ${response.status}`);
-  }
-  const data = await response.json();
-  return data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
-}
-
 async function send(text){
   if(busy)return;
   const inp=document.getElementById('ui');
@@ -315,16 +296,28 @@ async function send(text){
   const chunks=retrieve(q);
   const systemPrompt=buildSystemPrompt(chunks);
 
-  // Build messages array from recent history (exclude the message we just added)
-  const recentHist=hist.slice(-12,-1); // last 6 turns (before the new user msg)
+  // Build multi-turn messages from history (exclude the message we just added)
+  const recentHist=hist.slice(-12,-1);
   const messages=[];
   for(const m of recentHist){
-    messages.push({role: m.r==='u'?'user':'assistant', content: m.c});
+    messages.push({role:m.r==='u'?'user':'assistant',content:m.c});
   }
-  messages.push({role:'user', content: q});
+  messages.push({role:'user',content:q});
 
   try{
-    const reply = await callClaude(systemPrompt, messages);
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:systemPrompt,
+        messages
+      })
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error?.message||`API error ${res.status}`);
+    const reply=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
     removeTyping();busy=false;
     const seen=new Set();
     const srcs=chunks.filter(c=>{if(seen.has(c.u))return false;seen.add(c.u);return true;}).slice(0,3);
